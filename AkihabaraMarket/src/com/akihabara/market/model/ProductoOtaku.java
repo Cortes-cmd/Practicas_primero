@@ -1,5 +1,7 @@
+//Paquete al que pertenece esta clase
 package com.akihabara.market.model;
 
+//Datos de la propia clase o atributos
 public class ProductoOtaku {
 
 	protected int id;
@@ -9,8 +11,10 @@ public class ProductoOtaku {
 	int stock;
 
 
+//Constructor vacío
 public ProductoOtaku() {};
 
+//Constructor que inicializa los datos de la clase perse
 public ProductoOtaku(int id,String nombre, String categoria, Double precio, int stock) {
 	
 	this.id= id;
@@ -20,6 +24,7 @@ public ProductoOtaku(int id,String nombre, String categoria, Double precio, int 
 	this.stock=stock;
 }
 
+//Getters para obtener los datos de la clase y setters para acceder a ellos
 public String getNombre(){
 	return nombre;
 }
@@ -60,6 +65,7 @@ public void setId(int id) {
 	this.id =id;
 }
 
+//Método representativo de lo que contiene la propia clase, uso String Format para marcar cómo quiero ver precio, con 2 decimales en este caso, y el valor de precio donde se encuentra el "%"
 public String toString() {
 	
 	return "------------------------------------\nDatos de Akihabara_Market \n -----------------------------------\n"

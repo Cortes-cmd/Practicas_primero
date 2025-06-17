@@ -1,4 +1,6 @@
+//Paquete al que pertenece la clase
 package com.akihabara.market.view;
+//Importaciones necesarias para usar sus funciones
 import java.util.Scanner;
 import com.akihabara.market.dao.DatabaseConnection;
 import com.akihabara.market.model.*;
@@ -6,17 +8,22 @@ import com.akihabara.market.dao.*;
 import java.sql.Connection;
 //Importo las funcionalidades de la clase Conexion para establecer conexión con la base de datos
 import java.util.*;
+import com.akihabara.market.llm.*;
 public class InterfazConsola {
 	
 	public void menu() {
-		
+
+		// Inicializo todas las clases necesarias para las funciones que ejecuta el programa y el scanner para solicitar datos
 		   int opcion= 0;
 		   Scanner sc = new Scanner (System.in);
 		   
 		   DatabaseConnection db = new DatabaseConnection();
 		   Connection conn = db.getConexion();
-
+		   LlmService IC = new LlmService();
 		   ProductoDAO dao = new ProductoDAO(conn);
+		   ClienteOtakuDAO clid = new ClienteOtakuDAO(conn);
+		     PedidoOtakuDAO pedidoDAO = new PedidoOtakuDAO(conn);
+             DetallePedidoOtakuDAO detalleDAO = new DetallePedidoOtakuDAO(conn);
 
 
 		    //Con el do al menos una vez que ejecute el código para mostrar menú
@@ -24,8 +31,8 @@ public class InterfazConsola {
 		        try {
 		        	
 		        	
-		        	
-		            System.out.println("---------------------------------------MENU----------------------------------------------- \n 1 - Agregar Productos  \n 2 - Obtener Producto Por ID \n 3 - Obtener todos los Productos\n 4 - Actualizar Producto \n 5 - Eliminar Producto \n 6 - Buscar Productos Por Nombre \n 7 - Buscar Producto Por Categoría\n 8 - Salir");
+		        	//Muestro las posibles opciones
+		            System.out.println("---------------------------------------MENU----------------------------------------------- \n 1 - Agregar Productos   \n 2 - Insertar nombre de IA (recibe tipo y franquicia en la que se base) \n 3 - Obtener Producto Por ID \n 4 - Obtener todos los Productos\n 5 - Actualizar Producto \n 6 - Eliminar Producto \n 7 - Buscar Productos Por Nombre \n 8 - Buscar Producto Por Categoría\n 9 - Agregar Cliente nuevo\n I0 - Obtener todos los Clientes\n 11 - Actualizar Clientes\n 12 - Eliminar Cliente\n 13 - Registra pedido\n 14 - Obtener todos los registros\n 15 - Consultar pedido de cliente\n 16 - Eliminar pedido\n 17 -  Salir");
 		            
 		            //Instancia de scanner para escribir en consola 
 
@@ -112,9 +119,40 @@ public class InterfazConsola {
 		                    break;
 		                    
 		                case 2:
-		            		
+		                	
+		                	//Primero pido todos los datos necesarios antes de usar la sugerencia de la IA, cuando suecede, paso los atributos necesarios como parámetros, de los que se sirve la IA para dar una respuesta, que recorto obteniendo el primer párrafo para acortarlo y así poder usarlo en una sentencia InsertInto
 		                	sc.nextLine();
+		                	
+		                	System.out.println("Precisa el tipo de producto que sería");
+		                	String	tipo = sc.nextLine();
+		                	System.out.println("Dime en qué franquicia está basada");
+		                	String	franquicia = sc.nextLine();
+		                	System.out.print("Introduce el precio: ");
+		                	double newPrecio1 = sc.nextDouble();
+		                	System.out.print("Introduce el stock: ");
+		                	int newStock1 = sc.nextInt();
+		            		
+		                	
+		               String respuestaAI= 	IC.sugerirNombreProducto(tipo,franquicia);
+		                	
+		               System.out.println(respuestaAI);
+		               
+		               String nombreSugerido = respuestaAI.split("\n")[0].trim();
+		                	sc.nextLine();
+		                	
+		                	System.out.println(nombreSugerido);
+		            
+		        
 
+		                	ProductoOtaku prod1 = new ProductoOtaku(0,nombreSugerido,tipo,newPrecio1,newStock1);
+		                	
+			             	dao.agregarProducto(prod1);
+			             	
+			             	sc.nextLine();
+			             	
+			             	 break;
+		                case 3:
+		                	
 		                	//Creo array que obtendrá los datos de la función de todos los productos, y a través de bucle for los muestro, luego inicializo variable qu alojará un scanner para obtener info del producto con ese id 
 		            		ArrayList<ProductoOtaku> pos = (ArrayList<ProductoOtaku>)dao.obtenerTodosLosProductos();
 		            		
@@ -134,7 +172,7 @@ public class InterfazConsola {
 		            		
 	                         break;
 		           
-		                case 3:
+		                case 4:
 		                	
 		                	sc.nextLine();
 
@@ -148,7 +186,7 @@ public class InterfazConsola {
 			                    break;
 		                
 		                	
-		                case 4:
+		                case 5:
 		                	
 		                	sc.nextLine();
 
@@ -175,23 +213,23 @@ public class InterfazConsola {
 
 		        			System.out.println( "Elige el precio del producto que deseas modificar \n");
 		        			
-		        			Double  newPrecio1 = sc.nextDouble();
+		        			Double  newPrecio2 = sc.nextDouble();
 
 		        			System.out.println( "Elige el stock que poseemos del producto que deseas modificar \n");
 		        			
-		        			int  newStock1 = sc.nextInt();
+		        			int  newStock2 = sc.nextInt();
 		        				
 		        			
 
 		        			
-		        		ProductoOtaku PO = new ProductoOtaku(Id1,newNombre1,newCategoria1,newPrecio1,newStock1);		
+		        		ProductoOtaku PO = new ProductoOtaku(Id1,newNombre1,newCategoria1,newPrecio2,newStock2);		
 		        		
 		        		dao.actualizarProducto(PO);
 		        		
 		                    break;
 		                    
 		                
-		                case 5:
+		                case 6:
 		                	
 		                	sc.nextLine();
 
@@ -218,11 +256,11 @@ public class InterfazConsola {
 		                		
 		                	
 		                		
-		                	db.closeConexion();
+		                	
 		                	
 		                	break;
 		                	
-		                case 6:
+		                case 7:
 
 		                	sc.nextLine();
 		        				
@@ -238,7 +276,7 @@ public class InterfazConsola {
 
 		        				break;
 		        			
-		                case 7:
+		                case 8:
 		                			        
 		                	sc.nextLine();
 
@@ -252,8 +290,194 @@ public class InterfazConsola {
 		        		System.out.println(dao.buscarProductoPorCategoria(newCategoria2));
 		        			
 		        			break;
-		                case 8:
+		        			
+		                case 9:
+
+// Pido los datos necesarios para la inserción, y luego los introduzco en la función de adición de clientes como parámetros, creo un nuevo objeto fecha con el valor de la fecha actual para no tener que introducirlo manualmente y ejecuto
+		                	  sc.nextLine();
+		                	    System.out.println("Introduce el DNI del nuevo cliente:");
+		                	    String dni = sc.nextLine();
+
+		                	    System.out.println("Introduce el nombre del nuevo cliente:");
+		                	    String nombre = sc.nextLine();
+
+		                	    System.out.println("Introduce el email del nuevo cliente:");
+		                	    String email = sc.nextLine();
+
+		                	    System.out.println("Introduce el teléfono del nuevo cliente:");
+		                	    String telefono = sc.nextLine();
+
+		                	    Date fechaRegistro = new Date();
+		                	    
+		                	    ClienteOtaku nuevoCliente = new ClienteOtaku(dni, nombre, email, telefono, new java.sql.Date(fechaRegistro.getTime()));
+		                	    
+		                	    ClienteOtakuDAO clienteDao = new ClienteOtakuDAO(conn);
+		                	    
+		                	    clienteDao.agregarCliente(nuevoCliente);
+		                	    System.out.println("Cliente agregado correctamente.");
+		          
+		                	    break;
+		                	    
+		                case 10: 
+// Introduzco lo obtenido tras usar la función de obtener todos los clientes en un array, que recorro con un bucle for, y en el que voy mostrando poco a poco lo detectado en cada bucle 
+		                	ArrayList<ClienteOtaku> cli = (ArrayList<ClienteOtaku>) clid.obtenerTodosLosClientes();
+
+		                	for (ClienteOtaku cliente : cli) {
+		                	    System.out.println(cliente);
+		                	}
+
+		                case 11:
+//Pido el DNI y uso la función que lo requiere para realizar la búsqueda, si no le he dado una variable vacía como valor, realiza la consulta SQL de la función
+// Y permite al usuario no poner nada y que quede como el valor que tenía antes en ese campo, o editarlo, luego usa la función para editar al cliente, ejecutando la segunda y última función		                	
+		                	 System.out.print("Introduce el DNI del cliente a editar: ");
+		                	 
+		                        String dni1 = sc.nextLine();
+		                        
+		                        ClienteOtaku cliente = clid.obtenerClientePorDni(dni1);
+		                        if (cliente != null) {
+		                            System.out.print("Nuevo nombre (" + cliente.getNombre() + "): ");
+		                            String nuevoNombre = sc.nextLine();
+		                            System.out.print("Nuevo email (" + cliente.getEmail() + "): ");
+		                            String nuevoEmail = sc.nextLine();
+		                            System.out.print("Nuevo teléfono (" + cliente.getTelefono() + "): ");
+		                            String nuevoTelefono = sc.nextLine();
+
+		                            cliente.setNombre(nuevoNombre.isEmpty() ? cliente.getNombre() : nuevoNombre);
+		                            cliente.setEmail(nuevoEmail.isEmpty() ? cliente.getEmail() : nuevoEmail);
+		                            cliente.setTelefono(nuevoTelefono.isEmpty() ? cliente.getTelefono() : nuevoTelefono);
+
+		                            if (clid.actualizarCliente(cliente)) {
+		                                System.out.println("Cliente actualizado correctamente.");
+		                            } else {
+		                                System.out.println("Error al actualizar cliente.");
+		                            }
+		                        } else {
+		                            System.out.println("Cliente no encontrado.");
+		                        }
+		                        
+		                case 12:
+//Pido el DNI que necesito saber para eliminar al cliente, y uso la función que lo requiere para realizar la eliminación por la pk de cliente		                	
+		                	 System.out.print("Introduce el DNI del cliente a eliminar: ");
+		                	 
+		                        String dni2 = sc.nextLine();
+		                        
+		                        if (clid.eliminarCliente(dni2)) {
+		                            System.out.println("Cliente eliminado correctamente.");
+		                        } else {
+		                            System.out.println("Error al eliminar cliente.");
+		                        }
+		                    
+		                case 13:
+//Pido los datos del cliente que realizaría el pedido, luego introduzco los detalles del producto en el array detalles para luego aplicar la función
+//De inserción de pedido 
+		                	try {
+		                        sc.nextLine();
+
+		                        System.out.println("Introduce el DNI del cliente:");
+		                        String dniCliente = sc.nextLine();
+
+		                        Date fecha = new Date();
+		                        PedidoOtaku nuevoPedido = new PedidoOtaku();
+		                        nuevoPedido.setDniCliente(dniCliente);
+		                        nuevoPedido.setFecha(new java.sql.Date(fecha.getTime()));
+
+		                        List<DetallePedidoOtaku> detalles = new ArrayList<>();
+
+		                        while (true) {
+		                            System.out.println("Introduce el ID del producto:");
+		                            int idProducto = sc.nextInt();
+
+		                            System.out.println("Introduce la cantidad:");
+		                            int cantidad = sc.nextInt();
+
+		                            System.out.println("Introduce el precio:");
+		                            double precio = sc.nextDouble();
+
+		                            DetallePedidoOtaku detalle = new DetallePedidoOtaku();
+		                            detalle.setIdProducto(idProducto);
+		                            detalle.setCantidad(cantidad);
+		                            detalle.setPrecio(precio);
+
+		                            detalles.add(detalle);
+
+		                            sc.nextLine(); // limpiar buffer
+		                            System.out.println("¿Deseas agregar otro producto al pedido? (s/n)");
+		                            String continuar = sc.nextLine();
+		                            if (!continuar.equalsIgnoreCase("s")) {
+		                                break;
+		                            }
+		                        }
+
+		                        nuevoPedido.setDetalles(detalles);
+		                        int idPedidoRegistrado = pedidoDAO.registrarPedidoConDetalles(nuevoPedido);
+		                        System.out.println("Pedido registrado con éxito. ID del pedido: " + idPedidoRegistrado);
+
+		                    } catch (Exception e) {
+		                        System.out.println("Error al registrar el pedido: " + e.getMessage());
+		                    }
+		                    break;
 		                	
+		                case 14:
+//Pido el DNI del cliente del que se desea obtener los datos de su pedido, lo introduzco en un array y este contendrá los datos de la función que obtiene los datos del pedido por el DNI
+//Y los imprimo a través de un bucle for si el array que se devuelve no está vacío por posible 	error o que no tenga pedidos ese cliente		                	
+		                	 try {
+		                         System.out.println("Introduce el DNI del cliente para ver todos sus pedidos:");
+		                         sc.nextLine(); // limpiar buffer
+		                         String dniBusqueda = sc.nextLine();
+
+		                         List<PedidoOtaku> pedidosCliente = pedidoDAO.obtenerPedidosPorCliente(dniBusqueda);
+
+		                         if (pedidosCliente.isEmpty()) {
+		                             System.out.println("No se encontraron pedidos para el cliente con DNI: " + dniBusqueda);
+		                         } else {
+		                             for (PedidoOtaku pedido : pedidosCliente) {
+		                                 System.out.println("ID Pedido: " + pedido.getIdPedido() + ", Fecha: " + pedido.getFecha());
+		                             }
+		                         }
+		                     } catch (Exception e) {
+		                         System.out.println("Error al obtener pedidos: " + e.getMessage());
+		                     }
+		                     break;
+		                	
+		                case 15:
+		                	 try {
+//Pido el idPedido, que introduzco en un array desde donde llamo a la función que usa ese dato como parámetro para obtener los datos del pedido
+//Si no se encuentra null el array, muestra por consola los datos del pedido, y a través de un bucle for, los datos del/ los productos
+		                         System.out.println("Introduce el ID del pedido para ver el detalle completo:");
+		                         int idPedido = sc.nextInt();
+
+		                         PedidoOtaku pedidoCompleto = pedidoDAO.obtenerPedidoCompleto(idPedido);
+
+		                         if (pedidoCompleto != null) {
+		                             System.out.println("Pedido ID: " + pedidoCompleto.getIdPedido());
+		                             System.out.println("Cliente DNI: " + pedidoCompleto.getDniCliente());
+		                             System.out.println("Fecha: " + pedidoCompleto.getFecha());
+		                             System.out.println("Detalles del pedido:");
+		                             for (DetallePedidoOtaku det : pedidoCompleto.getDetalles()) {
+		                                 System.out.println("Producto ID: " + det.getIdProducto() + " | Cantidad: " + det.getCantidad() + " | Precio: " + det.getPrecio());
+		                             }
+		                         } else {
+		                             System.out.println("No se encontró el pedido con ese ID.");
+		                         }
+		                     } catch (Exception e) {
+		                         System.out.println("Error al consultar pedido: " + e.getMessage());
+		                     }
+		                     break;
+		                case 16:
+// Variable id para introducirla en el método de eliminar por idPedido, con posterior mensaje de éxito de eliminación		                	
+		                	 try {
+		                         System.out.println("Introduce el ID del pedido que deseas eliminar:");
+		                         int idEliminar = sc.nextInt();
+
+		                         pedidoDAO.eliminarPedido(idEliminar);
+		                         System.out.println("Pedido eliminado correctamente.");
+		                     } catch (Exception e) {
+		                         System.out.println("Error al eliminar el pedido: " + e.getMessage());
+		                     }
+		                     break;
+		                case 17:
+		                	
+		                 	
 		                	// Salgo del programa
 		                	
 		                    System.out.println("Saliendo del programa...");
@@ -272,11 +496,14 @@ public class InterfazConsola {
 		                System.out.println("Por favor ingresa un número válido");
 		            }
 		        
-		        //Mientras que la opción elegida no sea cinco,, que sería para salir del programa
-		        } while(opcion != 8);
-		    
+		        //Mientras que la opción elegida no sea 17, que sería para salir del programa, y cierro conexión y el scanner
+		        } while(opcion != 17);
+		        
+		    db.closeConexion();
 		    	sc.close();
 		    }
+
+
 	}
 	 
 
