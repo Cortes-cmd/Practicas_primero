@@ -26,7 +26,7 @@ public class LlmService {
     public String sugerirNombreProducto(String tipo, String franquicia) {
 
     	// La clave de la API
-    	String apiKey = "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";  
+    	String apiKey = "sk-or-v1-";  
 
         // Prompt enviado a la IA, pide un nombre directo para el producto usando los parámetros de la función
         String prompt = "Sugiere sólamente un nombre llamativo y original para un producto otaku del tipo" 
